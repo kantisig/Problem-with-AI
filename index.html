@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculus AI Tutor - Standalone Edition</title>
+  <title>Calculus AI Tutor Workspace</title>
 
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -61,6 +61,25 @@
     }
     .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 1.25rem; }
     .brand i { color: #818cf8; }
+
+    .provider-selector {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+    .provider-selector select {
+      background: #1e293b;
+      color: white;
+      border: 1px solid #475569;
+      padding: 4px 8px;
+      border-radius: 6px;
+      outline: none;
+      cursor: pointer;
+    }
 
     .container { display: flex; flex: 1; padding: 1.5rem; gap: 1.5rem; overflow: hidden; }
 
@@ -150,6 +169,24 @@
       overflow: hidden;
     }
 
+    .config-panel {
+      background: #f8fafc;
+      padding: 10px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .config-panel input {
+      flex: 1;
+      padding: 6px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
     .chat-header {
       background: #1e293b;
       color: white;
@@ -157,7 +194,7 @@
       font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
     }
 
     .chat-messages {
@@ -174,6 +211,7 @@
       border-radius: 14px;
       font-size: 0.95rem;
       line-height: 1.5;
+      white-space: pre-wrap;
     }
     .message.user {
       background: var(--primary);
@@ -238,7 +276,15 @@
 <header>
   <div class="brand">
     <i class="fa-solid fa-square-root-variable"></i>
-    <span>Calculus AI Workspace (Standalone Edition)</span>
+    <span>Calculus AI Workspace</span>
+  </div>
+  <div class="provider-selector">
+    <label for="ai-provider"><i class="fa-solid fa-microchip"></i> เลือกผู้ให้บริการ AI:</label>
+    <select id="ai-provider" onchange="toggleProviderSettings()">
+      <option value="groq" selected>Groq Cloud API (Qwen / Llama 3.3 - ฟรี 100%)</option>
+      <option value="gemini">Google Gemini API (ฟรี)</option>
+      <option value="ollama">Ollama Local (คอมตัวเอง)</option>
+    </select>
   </div>
 </header>
 
@@ -270,12 +316,18 @@
 
   <!-- AI Assistant Chat -->
   <div class="chat-section">
+    <div class="config-panel" id="key-config-panel">
+      <i class="fa-solid fa-key"></i>
+      <input type="password" id="api-key-input" placeholder="ใส่ Groq API Key (รับฟรีได้ที่ console.groq.com)">
+    </div>
+
     <div class="chat-header">
-      <i class="fa-solid fa-robot"></i> AI Tutor Assistant (Rock-a-Rhythm API)
+      <span><i class="fa-solid fa-robot"></i> AI Tutor Assistant</span>
+      <span id="active-model-badge" style="font-size:0.75rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px;">Qwen 2.5 / Llama 3.3</span>
     </div>
     
     <div class="chat-messages" id="chat-messages">
-      <div class="message assistant">สวัสดีครับ! ระบบพร้อมช่วยเหลือคุณแล้ว กดปุ่มขอคำใบ้ หรือพิมพ์ถามคำถามเกี่ยวกับโจทย์ข้อนี้ได้เลยครับ</div>
+      <div class="message assistant" id="welcome-msg">สวัสดีครับ! ระบบถูกปรับให้ใช้ Groq API (โควตาฟรีมหาศาล) เป็นค่าเริ่มต้น สามารถใส่ API Key ในช่องด้านบน แล้วเริ่มถามคำถามได้ทันทีครับ</div>
     </div>
 
     <div class="quick-prompts">
@@ -294,32 +346,35 @@
 <script>
   const quizData = [
     { q: "1. จงหาอนุพันธ์ของ $f(x) = 5x^3 - 2x^2 + 7x - 4$", options: ["$15x^2 - 4x + 7$", "$15x^3 - 4x + 7$", "$5x^2 - 4x + 7$", "$15x^2 - 4x$"], answer: 0 },
-    { q: "2. จงหาค่าของ $\\frac{d}{dx}(x^4 \\cdot \\sin(x))$", options: ["$4x^3 \\sin(x)$", "$4x^3 \\cos(x)$", "$4x^3 \\sin(x) + x^4 \\cos(x)$", "$4x^3 \\cos(x) - x^4 \\sin(x)$"], answer: 2 },
-    { q: "3. จงหาอนุพันธ์ของ $f(x) = \\frac{x^2 + 1}{x - 1}$", options: ["$\\frac{x^2 - 2x - 1}{(x-1)^2}$", "$\\frac{2x}{(x-1)^2}$", "$\\frac{x^2 + 2x - 1}{(x-1)^2}$", "$2x$"], answer: 0 },
-    { q: "4. จงหาค่าของ $\\frac{d}{dx}(e^{3x^2})$", options: ["$e^{3x^2}$", "$6x e^{3x^2}$", "$3x e^{3x^2}$", "$6x e^{6x}$"], answer: 1 },
-    { q: "5. จงหาอนุพันธ์ของ $f(x) = \\ln(x^3 + 2x)$", options: ["$\\frac{1}{x^3 + 2x}$", "$\\frac{3x^2 + 2}{x^3 + 2x}$", "$\\frac{3x^2 + 2}{x}$", "$3x^2 + 2$"], answer: 1 },
-    { q: "6. จงหาค่าของ $\\frac{d}{dx}(\\cos(5x))$", options: ["$5 \\sin(5x)$", "$-5 \\sin(5x)$", "$-\\sin(5x)$", "$5 \\cos(5x)$"], answer: 1 },
+    { q: "2. จงหาค่าของ $\frac{d}{dx}(x^4 \cdot \sin(x))$", options: ["$4x^3 \sin(x)$", "$4x^3 \cos(x)$", "$4x^3 \sin(x) + x^4 \cos(x)$", "$4x^3 \cos(x) - x^4 \sin(x)$"], answer: 2 },
+    { q: "3. จงหาอนุพันธ์ของ $f(x) = \frac{x^2 + 1}{x - 1}$", options: ["$\frac{x^2 - 2x - 1}{(x-1)^2}$", "$\frac{2x}{(x-1)^2}$", "$\frac{x^2 + 2x - 1}{(x-1)^2}$", "$2x$"], answer: 0 },
+    { q: "4. จงหาค่าของ $\frac{d}{dx}(e^{3x^2})$", options: ["$e^{3x^2}$", "$6x e^{3x^2}$", "$3x e^{3x^2}$", "$6x e^{6x}$"], answer: 1 },
+    { q: "5. จงหาอนุพันธ์ของ $f(x) = \ln(x^3 + 2x)$", options: ["$\frac{1}{x^3 + 2x}$", "$\frac{3x^2 + 2}{x^3 + 2x}$", "$\frac{3x^2 + 2}{x}$", "$3x^2 + 2$"], answer: 1 },
+    { q: "6. จงหาค่าของ $\frac{d}{dx}(\cos(5x))$", options: ["$5 \sin(5x)$", "$-5 \sin(5x)$", "$-\sin(5x)$", "$5 \cos(5x)$"], answer: 1 },
     { q: "7. จงหาอนุพันธ์ของ $f(x) = (2x^2 + 3)^4$", options: ["$4(2x^2 + 3)^3$", "$16x(2x^2 + 3)^3$", "$8x(2x^2 + 3)^3$", "$16x^3$"], answer: 1 },
-    { q: "8. จงหาค่าของ $\\frac{d}{dx}(\\tan(x))$", options: ["$\\sec^2(x)$", "$\\csc^2(x)$", "$-\\sec^2(x)$", "$\\cot(x)$"], answer: 0 },
-    { q: "9. จงหาอนุพันธ์ของ $f(x) = \\sqrt{x}$", options: ["$\\frac{1}{\\sqrt{x}}$", "$\\frac{1}{2\\sqrt{x}}$", "$\\frac{-1}{2\\sqrt{x}}$", "$\\frac{2}{\\sqrt{x}}$"], answer: 1 },
-    { q: "10. จงหาค่าของ $\\frac{d}{dx}(2^x)$", options: ["$x \\cdot 2^{x-1}$", "$2^x$", "$2^x \\ln(2)$", "$\\frac{2^x}{\\ln(2)}$"], answer: 2 },
+    { q: "8. จงหาค่าของ $\frac{d}{dx}(\tan(x))$", options: ["$\sec^2(x)$", "$\csc^2(x)$", "$-\sec^2(x)$", "$\cot(x)$"], answer: 0 },
+    { q: "9. จงหาอนุพันธ์ของ $f(x) = \sqrt{x}$", options: ["$\frac{1}{\sqrt{x}}$", "$\frac{1}{2\sqrt{x}}$", "$\frac{-1}{2\sqrt{x}}$", "$\frac{2}{\sqrt{x}}$"], answer: 1 },
+    { q: "10. จงหาค่าของ $\frac{d}{dx}(2^x)$", options: ["$x \cdot 2^{x-1}$", "$2^x$", "$2^x \ln(2)$", "$\frac{2^x}{\ln(2)}$"], answer: 2 },
     { q: "11. จงหาอนุพันธ์อันดับสองของ $f(x) = x^4 - 3x^2 + 2$", options: ["$4x^3 - 6x$", "$12x^2 - 6$", "$12x$", "$24x$"], answer: 1 },
-    { q: "12. จงหาค่าของ $\\frac{d}{dx}(\\arcsin(x))$", options: ["$\\frac{1}{\\sqrt{1-x^2}}$", "$\\frac{1}{1+x^2}$", "$-\\frac{1}{\\sqrt{1-x^2}}$", "$\\frac{1}{1-x^2}$"], answer: 0 },
-    { q: "13. จงหาอนุพันธ์ของ $f(x) = x \\cdot e^x$", options: ["$e^x$", "$x e^x$", "$e^x(x + 1)$", "$e^x(x - 1)$"], answer: 2 },
-    { q: "14. จงหาค่าของ $\\frac{d}{dx}(\\ln(\\cos(x)))$", options: ["$-\\tan(x)$", "$\\tan(x)$", "$-\\cot(x)$", "$\\frac{1}{\\cos(x)}$"], answer: 0 },
-    { q: "15. จงหาอนุพันธ์ของ $f(x) = \\frac{1}{x^2}$", options: ["$-\\frac{2}{x^3}$", "$\\frac{2}{x^3}$", "$-\\frac{1}{x}$", "$-\\frac{2}{x}$"], answer: 0 },
+    { q: "12. จงหาค่าของ $\frac{d}{dx}(\arcsin(x))$", options: ["$\frac{1}{\sqrt{1-x^2}}$", "$\frac{1}{1+x^2}$", "$-\frac{1}{\sqrt{1-x^2}}$", "$\frac{1}{1-x^2}$"], answer: 0 },
+    { q: "13. จงหาอนุพันธ์ของ $f(x) = x \cdot e^x$", options: ["$e^x$", "$x e^x$", "$e^x(x + 1)$", "$e^x(x - 1)$"], answer: 2 },
+    { q: "14. จงหาค่าของ $\frac{d}{dx}(\ln(\cos(x)))$", options: ["$-\tan(x)$", "$\tan(x)$", "$-\cot(x)$", "$\frac{1}{\cos(x)}$"], answer: 0 },
+    { q: "15. จงหาอนุพันธ์ของ $f(x) = \frac{1}{x^2}$", options: ["$-\frac{2}{x^3}$", "$\frac{2}{x^3}$", "$-\frac{1}{x}$", "$-\frac{2}{x}$"], answer: 0 },
     { q: "16. จงหาความชันของเส้นสัมผัสโค้ง $y = x^2 - 3x + 2$ ที่จุด $x = 2$", options: ["0", "1", "2", "4"], answer: 1 },
-    { q: "17. จงหาค่าของ $\\frac{d}{dx}(\\sec(x))$", options: ["$\\sec(x)\\tan(x)$", "$\\sec^2(x)$", "$-\\sec(x)\\tan(x)$", "$\\tan^2(x)$"], answer: 0 },
-    { q: "18. จงหาอนุพันธ์ของ $f(x) = (x^3 + 1)^{1/2}$", options: ["$\\frac{3x^2}{2\\sqrt{x^3+1}}$", "$\\frac{1}{2\\sqrt{x^3+1}}$", "$\\frac{3x^2}{\\sqrt{x^3+1}}$", "$3x^2\\sqrt{x^3+1}$"], answer: 0 },
+    { q: "17. จงหาค่าของ $\frac{d}{dx}(\sec(x))$", options: ["$\sec(x)\tan(x)$", "$\sec^2(x)$", "$-\sec(x)\tan(x)$", "$\tan^2(x)$"], answer: 0 },
+    { q: "18. จงหาอนุพันธ์ของ $f(x) = (x^3 + 1)^{1/2}$", options: ["$\frac{3x^2}{2\sqrt{x^3+1}}$", "$\frac{1}{2\sqrt{x^3+1}}$", "$\frac{3x^2}{\sqrt{x^3+1}}$", "$3x^2\sqrt{x^3+1}$"], answer: 0 },
     { q: "19. ถ้า $f(x) = x^3$ จงหา $f'(3)$", options: ["9", "18", "27", "81"], answer: 2 },
-    { q: "20. จงหาค่าของ $\\frac{d}{dx}(x \\ln(x) - x)$", options: ["$\\ln(x)$", "$\\ln(x) - 1$", "$\\frac{1}{x}$", "1"], answer: 0 }
+    { q: "20. จงหาค่าของ $\frac{d}{dx}(x \ln(x) - x)$", options: ["$\ln(x)$", "$\ln(x) - 1$", "$\frac{1}{x}$", "1"], answer: 0 }
   ];
 
   let currentQ = 0;
   let selectedOption = null;
   let userAnswers = new Array(quizData.length).fill(null);
 
-  window.onload = () => { loadQuestion(); };
+  window.onload = () => { 
+    loadQuestion(); 
+    toggleProviderSettings();
+  };
 
   function renderMath() {
     if (window.MathJax && window.MathJax.typesetPromise) {
@@ -397,7 +452,28 @@
   function nextQuestion() { if (currentQ < quizData.length - 1) { currentQ++; loadQuestion(); } }
   function prevQuestion() { if (currentQ > 0) { currentQ--; loadQuestion(); } }
 
-  /* API Handling System */
+  /* Provider Config UI */
+  function toggleProviderSettings() {
+    const provider = document.getElementById("ai-provider").value;
+    const keyPanel = document.getElementById("key-config-panel");
+    const keyInput = document.getElementById("api-key-input");
+    const badge = document.getElementById("active-model-badge");
+
+    if (provider === "groq") {
+      keyPanel.style.display = "flex";
+      keyInput.placeholder = "ใส่ Groq API Key (รับฟรีที่ console.groq.com)";
+      badge.innerText = "Groq Cloud (Qwen/Llama)";
+    } else if (provider === "gemini") {
+      keyPanel.style.display = "flex";
+      keyInput.placeholder = "ใส่ Gemini API Key (รับฟรีที่ aistudio.google.com)";
+      badge.innerText = "Google Gemini Flash";
+    } else if (provider === "ollama") {
+      keyPanel.style.display = "none";
+      badge.innerText = "Ollama Local (127.0.0.1)";
+    }
+  }
+
+  /* Universal AI Chat System */
   function handleKeyPress(e) { if (e.key === "Enter") sendMessage(); }
   function sendQuickPrompt(text) { document.getElementById("user-input").value = text; sendMessage(); }
 
@@ -409,9 +485,15 @@
   }
 
   async function sendMessage() {
+    const provider = document.getElementById("ai-provider").value;
+    const keyInput = document.getElementById("api-key-input").value.trim();
     const inputEl = document.getElementById("user-input");
     const text = inputEl.value.trim();
+
     if (!text) return;
+    if (provider !== "ollama" && !keyInput) {
+      return alert("กรุณาใส่ API Key ในช่องตั้งค่าด้านบนก่อนใช้งานครับ");
+    }
 
     appendMessage("user", text);
     inputEl.value = "";
@@ -431,37 +513,65 @@
 3. เขียนสูตรในรูปแบบ LaTeX เช่น $f'(x) = 2x$
 4. ตอบเป็นภาษาไทย กระชับ`;
 
-    const loadingId = appendMessage("assistant", "กำลังประมวลผลคำตอบ...");
-
-    // ยิงผ่าน CORS Proxy เพื่อป้องกันเบราว์เซอร์บล็อก
-    const targetUrl = "https://chat.rock-a-rhythm.net/api/chat/completions";
-    const proxyUrl = "https://corsproxy.io/?" + encodeURIComponent(targetUrl);
+    const loadingId = appendMessage("assistant", "กำลังคิดคำตอบ...");
 
     try {
-      const response = await fetch(proxyUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "qwen2.5",
-          messages: [
-            { role: "system", content: systemPrompt },
-            { role: "user", content: text }
-          ]
-        })
-      });
+      let replyText = "";
 
-      const data = await response.json();
+      if (provider === "groq") {
+        const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${keyInput}`
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: text }
+            ],
+            temperature: 0.6
+          })
+        });
+        const data = await response.json();
+        replyText = data.choices?.[0]?.message?.content || "⚠️ เกิดข้อผิดพลาดจาก Groq API (โปรดตรวจสอบ Key)";
       
-      if (data.choices && data.choices[0] && data.choices[0].message) {
-        updateMessage(loadingId, data.choices[0].message.content);
-      } else if (data.message) {
-        updateMessage(loadingId, data.message);
-      } else {
-        updateMessage(loadingId, "⚠️ ไม่สามารถอ่านคำตอบจากระบบได้ กรุณาลองใหม่อีกครั้ง");
+      } else if (provider === "gemini") {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${keyInput}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: `${systemPrompt}
+
+คำถามจากผู้เรียน: ${text}` }] }]
+          })
+        });
+        const data = await response.json();
+        replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ เกิดข้อผิดพลาดจาก Gemini API (โปรดตรวจสอบ Key)";
+      
+      } else if (provider === "ollama") {
+        const response = await fetch("http://127.0.0.1:11434/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "qwen2.5",
+            messages: [
+              { role: "system", content: systemPrompt },
+              { role: "user", content: text }
+            ],
+            stream: false
+          })
+        });
+        const data = await response.json();
+        replyText = data.message?.content || "⚠️ เกิดข้อผิดพลาดจาก Ollama ในเครื่อง";
       }
+
+      updateMessage(loadingId, replyText);
+
     } catch (err) {
       console.error(err);
-      updateMessage(loadingId, "⚠️ เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ กรุณาตรวจสอบการเชื่อมต่ออินเทอร์เน็ต");
+      updateMessage(loadingId, "⚠️ ไม่สามารถเชื่อมต่อกับบริการ AI ได้ กรุณาตรวจสอบ Key หรือสถานะเครือข่าย");
     }
   }
 
