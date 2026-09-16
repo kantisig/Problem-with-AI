@@ -1,47 +1,3 @@
-<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculus AI Tutor Workspace</title>
-
-  <!-- Google Fonts & FontAwesome -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- MathJax Configuration -->
-  <script>
-    window.MathJax = {
-      tex: {
-        inlineMath: [['$', '$'], ['\\(', '\\)']],
-        displayMath: [['$$', '$$'], ['\\[', '\\]']]
-      },
-      svg: { fontCache: 'global' }
-    };
-  </script>
-  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-
-  <style>
-    :root {
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
-      --panel-bg: rgba(255, 255, 255, 0.96);
-      --primary: #6366f1;
-      --primary-hover: #4f46e5;
-      --primary-light: #eeeffe;
-      --accent-green: #10b981;
-      --accent-red: #ef4444;
-      --text-main: #1e293b;
-      --text-muted: #64748b;
-      --radius-lg: 16px;
-      --radius-md: 10px;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Sarabun', 'Inter', sans-serif;
-      background: var(--bg-gradient);
       color: var(--text-main);
       height: 100vh;
       display: flex;
@@ -346,25 +302,25 @@
 <script>
   const quizData = [
     { q: "1. จงหาอนุพันธ์ของ $f(x) = 5x^3 - 2x^2 + 7x - 4$", options: ["$15x^2 - 4x + 7$", "$15x^3 - 4x + 7$", "$5x^2 - 4x + 7$", "$15x^2 - 4x$"], answer: 0 },
-    { q: "2. จงหาค่าของ $\frac{d}{dx}(x^4 \cdot \sin(x))$", options: ["$4x^3 \sin(x)$", "$4x^3 \cos(x)$", "$4x^3 \sin(x) + x^4 \cos(x)$", "$4x^3 \cos(x) - x^4 \sin(x)$"], answer: 2 },
-    { q: "3. จงหาอนุพันธ์ของ $f(x) = \frac{x^2 + 1}{x - 1}$", options: ["$\frac{x^2 - 2x - 1}{(x-1)^2}$", "$\frac{2x}{(x-1)^2}$", "$\frac{x^2 + 2x - 1}{(x-1)^2}$", "$2x$"], answer: 0 },
-    { q: "4. จงหาค่าของ $\frac{d}{dx}(e^{3x^2})$", options: ["$e^{3x^2}$", "$6x e^{3x^2}$", "$3x e^{3x^2}$", "$6x e^{6x}$"], answer: 1 },
-    { q: "5. จงหาอนุพันธ์ของ $f(x) = \ln(x^3 + 2x)$", options: ["$\frac{1}{x^3 + 2x}$", "$\frac{3x^2 + 2}{x^3 + 2x}$", "$\frac{3x^2 + 2}{x}$", "$3x^2 + 2$"], answer: 1 },
-    { q: "6. จงหาค่าของ $\frac{d}{dx}(\cos(5x))$", options: ["$5 \sin(5x)$", "$-5 \sin(5x)$", "$-\sin(5x)$", "$5 \cos(5x)$"], answer: 1 },
+    { q: "2. จงหาค่าของ $\\frac{d}{dx}(x^4 \\cdot \\sin(x))$", options: ["$4x^3 \\sin(x)$", "$4x^3 \\cos(x)$", "$4x^3 \\sin(x) + x^4 \\cos(x)$", "$4x^3 \\cos(x) - x^4 \\sin(x)$"], answer: 2 },
+    { q: "3. จงหาอนุพันธ์ของ $f(x) = \\frac{x^2 + 1}{x - 1}$", options: ["$\\frac{x^2 - 2x - 1}{(x-1)^2}$", "$\\frac{2x}{(x-1)^2}$", "$\\frac{x^2 + 2x - 1}{(x-1)^2}$", "$2x$"], answer: 0 },
+    { q: "4. จงหาค่าของ $\\frac{d}{dx}(e^{3x^2})$", options: ["$e^{3x^2}$", "$6x e^{3x^2}$", "$3x e^{3x^2}$", "$6x e^{6x}$"], answer: 1 },
+    { q: "5. จงหาอนุพันธ์ของ $f(x) = \\ln(x^3 + 2x)$", options: ["$\\frac{1}{x^3 + 2x}$", "$\\frac{3x^2 + 2}{x^3 + 2x}$", "$\\frac{3x^2 + 2}{x}$", "$3x^2 + 2$"], answer: 1 },
+    { q: "6. จงหาค่าของ $\\frac{d}{dx}(\\cos(5x))$", options: ["$5 \\sin(5x)$", "$-5 \\sin(5x)$", "$-\\sin(5x)$", "$5 \\cos(5x)$"], answer: 1 },
     { q: "7. จงหาอนุพันธ์ของ $f(x) = (2x^2 + 3)^4$", options: ["$4(2x^2 + 3)^3$", "$16x(2x^2 + 3)^3$", "$8x(2x^2 + 3)^3$", "$16x^3$"], answer: 1 },
-    { q: "8. จงหาค่าของ $\frac{d}{dx}(\tan(x))$", options: ["$\sec^2(x)$", "$\csc^2(x)$", "$-\sec^2(x)$", "$\cot(x)$"], answer: 0 },
-    { q: "9. จงหาอนุพันธ์ของ $f(x) = \sqrt{x}$", options: ["$\frac{1}{\sqrt{x}}$", "$\frac{1}{2\sqrt{x}}$", "$\frac{-1}{2\sqrt{x}}$", "$\frac{2}{\sqrt{x}}$"], answer: 1 },
-    { q: "10. จงหาค่าของ $\frac{d}{dx}(2^x)$", options: ["$x \cdot 2^{x-1}$", "$2^x$", "$2^x \ln(2)$", "$\frac{2^x}{\ln(2)}$"], answer: 2 },
+    { q: "8. จงหาค่าของ $\\frac{d}{dx}(\\tan(x))$", options: ["$\\sec^2(x)$", "$\\csc^2(x)$", "$-\\sec^2(x)$", "$\\cot(x)$"], answer: 0 },
+    { q: "9. จงหาอนุพันธ์ของ $f(x) = \\sqrt{x}$", options: ["$\\frac{1}{\\sqrt{x}}$", "$\\frac{1}{2\\sqrt{x}}$", "$\\frac{-1}{2\\sqrt{x}}$", "$\\frac{2}{\\sqrt{x}}$"], answer: 1 },
+    { q: "10. จงหาค่าของ $\\frac{d}{dx}(2^x)$", options: ["$x \\cdot 2^{x-1}$", "$2^x$", "$2^x \\ln(2)$", "$\\frac{2^x}{\\ln(2)}$"], answer: 2 },
     { q: "11. จงหาอนุพันธ์อันดับสองของ $f(x) = x^4 - 3x^2 + 2$", options: ["$4x^3 - 6x$", "$12x^2 - 6$", "$12x$", "$24x$"], answer: 1 },
-    { q: "12. จงหาค่าของ $\frac{d}{dx}(\arcsin(x))$", options: ["$\frac{1}{\sqrt{1-x^2}}$", "$\frac{1}{1+x^2}$", "$-\frac{1}{\sqrt{1-x^2}}$", "$\frac{1}{1-x^2}$"], answer: 0 },
-    { q: "13. จงหาอนุพันธ์ของ $f(x) = x \cdot e^x$", options: ["$e^x$", "$x e^x$", "$e^x(x + 1)$", "$e^x(x - 1)$"], answer: 2 },
-    { q: "14. จงหาค่าของ $\frac{d}{dx}(\ln(\cos(x)))$", options: ["$-\tan(x)$", "$\tan(x)$", "$-\cot(x)$", "$\frac{1}{\cos(x)}$"], answer: 0 },
-    { q: "15. จงหาอนุพันธ์ของ $f(x) = \frac{1}{x^2}$", options: ["$-\frac{2}{x^3}$", "$\frac{2}{x^3}$", "$-\frac{1}{x}$", "$-\frac{2}{x}$"], answer: 0 },
+    { q: "12. จงหาค่าของ $\\frac{d}{dx}(\\arcsin(x))$", options: ["$\\frac{1}{\\sqrt{1-x^2}}$", "$\\frac{1}{1+x^2}$", "$-\\frac{1}{\\sqrt{1-x^2}}$", "$\\frac{1}{1-x^2}$"], answer: 0 },
+    { q: "13. จงหาอนุพันธ์ของ $f(x) = x \\cdot e^x$", options: ["$e^x$", "$x e^x$", "$e^x(x + 1)$", "$e^x(x - 1)$"], answer: 2 },
+    { q: "14. จงหาค่าของ $\\frac{d}{dx}(\\ln(\\cos(x)))$", options: ["$-\\tan(x)$", "$\\tan(x)$", "$-\\cot(x)$", "$\\frac{1}{\\cos(x)}$"], answer: 0 },
+    { q: "15. จงหาอนุพันธ์ของ $f(x) = \\frac{1}{x^2}$", options: ["$-\\frac{2}{x^3}$", "$\\frac{2}{x^3}$", "$-\\frac{1}{x}$", "$-\\frac{2}{x}$"], answer: 0 },
     { q: "16. จงหาความชันของเส้นสัมผัสโค้ง $y = x^2 - 3x + 2$ ที่จุด $x = 2$", options: ["0", "1", "2", "4"], answer: 1 },
-    { q: "17. จงหาค่าของ $\frac{d}{dx}(\sec(x))$", options: ["$\sec(x)\tan(x)$", "$\sec^2(x)$", "$-\sec(x)\tan(x)$", "$\tan^2(x)$"], answer: 0 },
-    { q: "18. จงหาอนุพันธ์ของ $f(x) = (x^3 + 1)^{1/2}$", options: ["$\frac{3x^2}{2\sqrt{x^3+1}}$", "$\frac{1}{2\sqrt{x^3+1}}$", "$\frac{3x^2}{\sqrt{x^3+1}}$", "$3x^2\sqrt{x^3+1}$"], answer: 0 },
+    { q: "17. จงหาค่าของ $\\frac{d}{dx}(\\sec(x))$", options: ["$\\sec(x)\\tan(x)$", "$\\sec^2(x)$", "$-\\sec(x)\\tan(x)$", "$\\tan^2(x)$"], answer: 0 },
+    { q: "18. จงหาอนุพันธ์ของ $f(x) = (x^3 + 1)^{1/2}$", options: ["$\\frac{3x^2}{2\\sqrt{x^3+1}}$", "$\\frac{1}{2\\sqrt{x^3+1}}$", "$\\frac{3x^2}{\\sqrt{x^3+1}}$", "$3x^2\\sqrt{x^3+1}$"], answer: 0 },
     { q: "19. ถ้า $f(x) = x^3$ จงหา $f'(3)$", options: ["9", "18", "27", "81"], answer: 2 },
-    { q: "20. จงหาค่าของ $\frac{d}{dx}(x \ln(x) - x)$", options: ["$\ln(x)$", "$\ln(x) - 1$", "$\frac{1}{x}$", "1"], answer: 0 }
+    { q: "20. จงหาค่าของ $\\frac{d}{dx}(x \\ln(x) - x)$", options: ["$\\ln(x)$", "$\\ln(x) - 1$", "$\\frac{1}{x}$", "1"], answer: 0 }
   ];
 
   let currentQ = 0;
